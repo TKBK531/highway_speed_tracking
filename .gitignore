@@ -117,10 +117,20 @@ dmypy.json
 # VS Code
 .vscode/
 
-# Output directory
-output/
 
 # YOLO files
 *.pt
 
 .mp4
+
+# Ignore everything in the resources folder
+resources/*
+
+# Except the .gitkeep file
+!resources/.gitkeep
+
+# Ignore everything in the output folder
+output/*
+
+# Except the .gitkeep file
+!output/.gitkeep

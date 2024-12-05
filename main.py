@@ -1,27 +1,20 @@
 from ultralytics import YOLO
-from ultralytics.solutions import speed_estimation
+import speed_estimation
 import cv2
 
-model = YOLO("yolov8s.pt")
+model = YOLO("yolo11n.pt")
 names = model.model.names
 
-cap = cv2.VideoCapture("highway.mp4")
+cap = cv2.VideoCapture("resources\highway.mp4")
 assert cap.isOpened(), "Error reading video file"
 w, h, fps = (
     int(cap.get(x))
     for x in (cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FPS)
 )
 
-video_writer = cv2.VideoWriter(
-    "output/speed_estimation.avi", cv2.VideoWriter_fourcc(*"mp4v"), fps, (w, h)
-)
-
-line_pts = [(0, 500), (1280, 400)]
+line_pts = [(0, 150), (1280, 350)]
 
 speed_obj = speed_estimation.SpeedEstimator()
-# Replace set_args with the correct method or attribute setting
-# Example: speed_obj.configure(reg_pts=line_pts, names=names, view_img=True)
-# or set attributes directly
 speed_obj.reg_pts = line_pts
 speed_obj.names = names
 speed_obj.view_img = True
@@ -38,7 +31,9 @@ while cap.isOpened():
     tracks = model.track(im0, persist=True, show=False)
 
     im0 = speed_obj.estimate_speed(im0)  # Pass only the image
-    video_writer.write(im0)
+
+    # Draw the line on the frame
+    # cv2.line(im0, line_pts[0], line_pts[1], (0, 255, 0), 2)
 
     # Display the resulting frame
     cv2.imshow("Speed Estimation", im0)
@@ -48,5 +43,7 @@ while cap.isOpened():
         break
 
 cap.release()
-video_writer.release()
 cv2.destroyAllWindows()
+
+# Save the speeds to a file
+speed_obj.save_speeds_to_file()
