@@ -128,31 +128,6 @@ class SpeedEstimator(BaseSolution):
 
         return im0  # return output image for more usage
 
-    # def save_speeds_to_file(self, filename):
-    #     """
-    #     Saves the estimated speeds to a text file and calculates the average speed for each vehicle type.
-
-    #     Args:
-    #         filename (str): The name of the file to save the speeds to.
-    #     """
-    #     vehicle_speeds = defaultdict(list)
-
-    #     # Write the speeds to the file and collect speeds for each vehicle type
-    #     with open(filename, "w") as f:
-    #         f.write("Vehicle Type      Speed (km/h)\n")
-    #         f.write("==============================\n")
-    #         for vehicle_type, speed in self.speeds:
-    #             f.write(f"{vehicle_type:<15} {speed:>10.2f} km/h\n")
-    #             vehicle_speeds[vehicle_type].append(speed)
-
-    #     # Calculate and write the average speed for each vehicle type
-    #     with open(filename, "a") as f:
-    #         f.write("\nAverage Speeds:\n")
-    #         f.write("==============================\n")
-    #         for vehicle_type, speeds in vehicle_speeds.items():
-    #             average_speed = sum(speeds) / len(speeds)
-    #             f.write(f"{vehicle_type:<15} {average_speed:>10.2f} km/h\n")
-
     def save_speeds_to_file(self):
         """
         Saves the estimated speeds to a text file and calculates the average speed for each vehicle type.
@@ -163,21 +138,19 @@ class SpeedEstimator(BaseSolution):
 
         # Write the speeds to the file and collect speeds for each vehicle type
         with open(filename, "w", encoding="utf-8") as f:
-            f.write("Vehicle Type      Speed (km/h)\n")
-            f.write("==============================\n")
+            header = "Vehicle Type      Speed (km/h)\n"
+            separator = "=" * 30 + "\n"
+            f.write(header)
+            f.write(separator)
+
             for vehicle_type, speed in self.speeds:
-                if speed > 100:
-                    f.write(
-                        f"{vehicle_type:<13} {speed:>10.2f} km/h ⭕\n"
-                    )  # Red marker for speeds > 100
-                else:
-                    f.write(f"{vehicle_type:<15} {speed:>10.2f} km/h\n")
+                speed_marker = "🔴" if speed > 100 else "🟢"
+                f.write(f"{vehicle_type:<15} {speed:>10.2f} km/h {speed_marker:>10}\n")
                 vehicle_speeds[vehicle_type].append(speed)
 
-        # Calculate and write the average speed for each vehicle type
-        with open(filename, "a", encoding="utf-8") as f:
+            # Calculate and write the average speed for each vehicle type
             f.write("\nAverage Speeds:\n")
-            f.write("==============================\n")
+            f.write(separator)
             for vehicle_type, speeds in vehicle_speeds.items():
                 average_speed = sum(speeds) / len(speeds)
                 f.write(f"{vehicle_type:<15} {average_speed:>10.2f} km/h\n")
